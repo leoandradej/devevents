@@ -144,7 +144,8 @@ function generateSlug(title: string): string {
 
 // Helper function to normalize date to ISO format
 function normalizeDate(dateString: string): string {
-  const date = new Date(dateString);
+  // Parse as UTC to avoid timezone shifts
+  const date = new Date(dateString + 'T00:00:00.000Z');
   if (isNaN(date.getTime())) {
     throw new Error("Invalid date format");
   }
