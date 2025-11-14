@@ -66,6 +66,17 @@ export async function POST(req: NextRequest) {
         .end(buffer);
     });
 
+    if (
+      !uploadResult ||
+      typeof uploadResult !== "object" ||
+      !("secure_url" in uploadResult)
+    ) {
+      return NextResponse.json(
+        { message: "Image upload failed" },
+        { status: 500 }
+      );
+    }
+
     event.image = (uploadResult as { secure_url: string }).secure_url;
 
     const createdEvent = await Event.create({
