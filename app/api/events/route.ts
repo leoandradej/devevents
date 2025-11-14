@@ -14,7 +14,7 @@ export async function GET() {
       { status: 200 }
     );
   } catch (error) {
-    NextResponse.json(
+    return NextResponse.json(
       { message: "Event fetching failed", error: error },
       { status: 500 }
     );
@@ -47,8 +47,18 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
 
-    const tags = JSON.parse(formData.get("tags") as string);
-    const agenda = JSON.parse(formData.get("agenda") as string);
+    let tags: unknown;
+    let agenda: unknown;
+
+    try {
+      tags = JSON.parse(formData.get("tags") as string);
+      agenda = JSON.parse(formData.get("agenda") as string);
+    } catch (parseError) {
+      return NextResponse.json(
+        { message: "Invalid tags or agenda format" },
+        { status: 400 }
+      );
+    }
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
