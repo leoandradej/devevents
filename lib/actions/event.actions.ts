@@ -9,6 +9,10 @@ export const getSimilarEventsBySlug = async (slug: string) => {
 
     const event = await Event.findOne({ slug });
 
+    if (!event) {
+      return [];
+    }
+
     // MongoDB $ne operator = non equal | $in operator = includes
     return await Event.find({
       _id: { $ne: event._id },
