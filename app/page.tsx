@@ -1,7 +1,6 @@
 import EventCard from "@/components/EventCard";
 import ExploreButton from "@/components/ExploreButton";
 import { IEvent } from "@/database";
-import { events } from "@/lib/constants";
 import { cacheLife } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -10,19 +9,19 @@ const Page = async () => {
   "use cache";
   cacheLife("hours");
 
-  // if (!BASE_URL) {
-  //   throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
-  // }
+  if (!BASE_URL) {
+    throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
+  }
 
-  // const response = await fetch(`${BASE_URL}/api/events`, {
-  //   next: { revalidate: 3600 }
-  // });
+  const response = await fetch(`${BASE_URL}/api/events`, {
+    next: { revalidate: 3600 },
+  });
 
-  // if (!response.ok) {
-  //   throw new Error(`Failed to fetch events: ${response.statusText}`);
-  // }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch events: ${response.statusText}`);
+  }
 
-  //const { events } = await response.json();
+  const { events } = await response.json();
 
   return (
     <section>
