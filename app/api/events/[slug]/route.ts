@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import connectDB from "@/lib/mongodb";
-import { Event } from "@/database";
+import {Booking, Event} from "@/database";
+import { v2 as cloudinary } from "cloudinary";
 
 // Define route params type for type safety
 type RouteParams = {
@@ -12,7 +12,7 @@ type RouteParams = {
 
 /**
  * GET /api/events/[slug]
- * Fetches a single events by its slug
+ * Fetches a single event by its slug
  */
 export async function GET(
   req: NextRequest,
@@ -81,4 +81,74 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(req: NextRequest, { params }: RouteParams): Promise<NextResponse> {
+    try {
+        await connectDB();
+        const { slug } = await params;
+        if (!slug || typeof slug !== "string" || !slug.trim()) {
+            return NextResponse.json({ message: "Invalid or missing slug parameter" }, { status: 400 })
+        }
+        const sanitizedSlug = slug.trim().toLowerCase()
+
+        const formData = await req.formData()
+        const patch: Record<string, any> = {}
+
+        for (const [key, value] of formData.entries()) {
+            if (key === "tags" || key === "agenda") {
+                try {
+                    patch[key] = JSON.parse(String(value))
+                } catch {
+                    return NextResponse.json({ message: `Invalid ${key} format` }, { status: 400 })
+                }
+            } else if (key !== "image") {
+                patch[key] = value
+            }
+        }
+
+        const file = formData.get("image") as File | null
+        if (file) {
+            const arrayBuffer = await file.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
+            const uploadResult: any = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({ resource_type: "image", folder: "DevEvent" }, (error, results) => {
+                    if (error) return reject(error)
+                    resolve(results)
+                }).end(buffer)
+            })
+            patch.image = uploadResult.secure_url
+        }
+
+        const updated = await Event.findOneAndUpdate({ slug: sanitizedSlug }, patch, { new: true, runValidators: true })
+        if (!updated) return  NextResponse.json({ message: "Event not found" }, { status: 404 })
+
+        return  NextResponse.json({ message: "Event updated", event: updated }, { status: 200 })
+    } catch (error) {
+        if  (process.env.NODE_ENV === "development") console.error("Error updating event by slug: ", error)
+        return NextResponse.json({ message: "Update failed", error: error }, {status: 500 })
+    }
+}
+
+export async function DELETE(_req: NextRequest, { params }: RouteParams): Promise<NextResponse> {
+    try {
+        await connectDB()
+        const { slug } = await params;
+        if (!slug || typeof slug !== "string" || !slug.trim()) {
+            return NextResponse.json({ message: "Invalid or missing slug parameter" }, { status: 400 })
+        }
+
+        const sanitizedSlug = slug.trim().toLowerCase()
+
+        const deleted = await Event.findOneAndDelete({ slug: sanitizedSlug })
+        if (!deleted) return NextResponse.json({ message: "Event not found"}, { status: 404 })
+
+        // Cascade delete bookings
+        await Booking.deleteMany({ eventId: deleted._id })
+
+        return NextResponse.json({ message: "Event deleted" }, { status: 200 })
+    } catch (error) {
+        if (process.env.NODE_ENV === "development") console.error("Error deleting event by slug: ", error)
+        return NextResponse.json({ message: "Delete failed", error: error }, { status: 500 })
+    }
 }
