@@ -14,8 +14,9 @@ export async function GET() {
       { status: 200 }
     );
   } catch (error) {
+    console.error("Event fetching failed:", error);
     return NextResponse.json(
-      { message: "Event fetching failed", error: error },
+      { message: "Event fetching failed" },
       { status: 500 }
     );
   }
