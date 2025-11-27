@@ -83,12 +83,12 @@ export async function GET(
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { slug: string } }): Promise<NextResponse> {
+export async function PATCH(req: NextRequest, { params }: RouteParams): Promise<NextResponse> {
     try {
         await connectDB();
-        const { slug } = params
+        const { slug } = await params;
         if (!slug || typeof slug !== "string" || !slug.trim()) {
-            return NextResponse.json({ message: "Inavalid or missing slug parameter" }, { status: 400 })
+            return NextResponse.json({ message: "Invalid or missing slug parameter" }, { status: 400 })
         }
         const sanitizedSlug = slug.trim().toLowerCase()
 
@@ -130,10 +130,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { slug: stri
     }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { slug: string } }): Promise<NextResponse> {
+export async function DELETE(_req: NextRequest, { params }: RouteParams): Promise<NextResponse> {
     try {
         await connectDB()
-        const { slug } = params
+        const { slug } = await params;
         if (!slug || typeof slug !== "string" || !slug.trim()) {
             return NextResponse.json({ message: "Invalid or missing slug parameter" }, { status: 400 })
         }
