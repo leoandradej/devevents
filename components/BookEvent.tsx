@@ -11,7 +11,7 @@ const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const { success } = await createBooking({ eventId, slug, email });
+    const { success } = await createBooking({ eventId, email });
 
     if (success) {
       setSubmitted(true);
@@ -36,6 +36,7 @@ const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
+              required
             />
           </div>
 

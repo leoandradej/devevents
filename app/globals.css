@@ -274,4 +274,37 @@
             }
         }
     }
+
+    #create-event {
+        @apply flex flex-col gap-6 text-center;
+
+        form {
+            @apply flex flex-col gap-6 min-w-2xl;
+
+            > :first-child {
+                @apply bg-dark-100 border-dark-200 card-shadow flex w-full flex-col gap-6 rounded-[10px] border px-5 py-6
+            }
+
+            div {
+                @apply flex flex-col gap-4;
+
+                label {
+                    @apply text-sm font-medium text-gray-400
+                }
+
+                input,
+                textarea {
+                    @apply h-12! px-3! py-3! text-white! text-base! placeholder:text-gray-500! border-gray-600! bg-gray-800 rounded-lg! focus:border-primary! focus:ring-0!;
+                }
+
+                textarea {
+                    @apply h-32!
+                }
+            }
+
+            button {
+                @apply bg-primary! hover:bg-primary/90! w-full! cursor-pointer! items-center! justify-center! rounded-[6px]! px-4! py-2.5! text-lg! font-semibold! text-black!;
+            }
+        }
+    }
 }

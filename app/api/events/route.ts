@@ -3,6 +3,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 import connectDB from "@/lib/mongodb";
 import Event from "@/database/event.model";
+import {revalidateTag} from "next/cache";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,9 +30,17 @@ export async function POST(req: NextRequest) {
         { message: "Image file is required" },
         { status: 400 }
       );
-
-    let tags = JSON.parse(formData.get("tags") as string);
-    let agenda = JSON.parse(formData.get("agenda") as string);
+    let tags: string[] = [];
+    let agenda: string[] = [];
+    try {
+        tags = JSON.parse(String(formData.get("tags")));
+        agenda = JSON.parse(String(formData.get("agenda")));
+    } catch {
+        return NextResponse.json(
+            { message: "Invalid tags/agenda format" },
+             { status: 400 }
+        );
+    }
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -57,6 +66,7 @@ export async function POST(req: NextRequest) {
       agenda: agenda,
     });
 
+    revalidateTag("event", "default");
     return NextResponse.json(
       { message: "Event created successfully", event: createdEvent },
       { status: 201 }
