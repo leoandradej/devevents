@@ -173,7 +173,10 @@ export async function PATCH(req: NextRequest, { params }: RouteParams): Promise<
         return  NextResponse.json({ message: "Event updated", event: updated }, { status: 200 });
     } catch (error) {
         if  (process.env.NODE_ENV === "development") console.error("Error updating event by slug: ", error);
-        return NextResponse.json({ message: "Update failed", error: error }, {status: 500 });
+        return NextResponse.json(
+            { message: "Update failed", error: error instanceof Error ? error.message : "Unknown error" },
+            { status: 500 }
+        );
     }
 }
 
@@ -197,6 +200,9 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams): Promis
         return NextResponse.json({ message: "Event deleted" }, { status: 200 });
     } catch (error) {
         if (process.env.NODE_ENV === "development") console.error("Error deleting event by slug: ", error);
-        return NextResponse.json({ message: "Delete failed", error: error }, { status: 500 });
+        return NextResponse.json(
+            { message: "Delete failed", error: error instanceof Error ? error.message : "Unknown error" },
+            { status: 500 }
+        );
     }
 }
