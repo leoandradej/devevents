@@ -4,10 +4,13 @@ import {Suspense} from "react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
-const EditEventPage = async ({ params }: { params: Promise<{ slug: string }>}) => {
+const EditEventContent = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = await params;
 
-    const res = await fetch(`${BASE_URL}/api/events/${slug}`, { next: { revalidate: 0 } });
+    const res = await fetch(`${BASE_URL}/api/events/${slug}`, {
+        cache: 'no-store'
+    });
+
     if(!res.ok) return notFound();
     const { event } = await res.json();
     if(!event) return notFound();
@@ -28,14 +31,18 @@ const EditEventPage = async ({ params }: { params: Promise<{ slug: string }>}) =
         tags: event.tags || [],
     };
 
+    return <EditEvent slug={slug} defaults={defaults} />;
+};
+
+const EditEventPage = ({ params }: { params: Promise<{ slug: string }> }) => {
     return (
         <section id="create-event">
             <h1>Edit Event</h1>
             <Suspense fallback={<div>Loading event...</div>}>
-                <EditEvent slug={slug} defaults={defaults} />
+                <EditEventContent params={params} />
             </Suspense>
         </section>
     )
-}
+};
 
 export default EditEventPage
