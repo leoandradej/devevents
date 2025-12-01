@@ -11,7 +11,6 @@ const CreateEventPage = () => {
     const handleCreateEvent = async (formData: FormData) => {
         try {
             setIsSubmitting(true);
-            console.log(formData);
             const res = await fetch("/api/events", { method: "POST", body: formData });
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}))

@@ -1,5 +1,6 @@
 import {notFound} from "next/navigation";
 import EditEvent from "@/components/EditEvent";
+import {Suspense} from "react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
@@ -30,7 +31,9 @@ const EditEventPage = async ({ params }: { params: Promise<{ slug: string }>}) =
     return (
         <section id="create-event">
             <h1>Edit Event</h1>
-            <EditEvent slug={slug} defaults={defaults} />
+            <Suspense fallback={<div>Loading event...</div>}>
+                <EditEvent slug={slug} defaults={defaults} />
+            </Suspense>
         </section>
     )
 }

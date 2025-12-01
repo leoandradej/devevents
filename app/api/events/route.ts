@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       agenda: agenda,
     });
 
-    revalidateTag("events", "minutes")
+    revalidateTag("event", "default");
     return NextResponse.json(
       { message: "Event created successfully", event: createdEvent },
       { status: 201 }

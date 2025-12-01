@@ -169,7 +169,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams): Promise<
 
         if (!updated) return  NextResponse.json({ message: "Event not found" }, { status: 404 });
 
-        revalidateTag("events", "minutes")
+        revalidateTag("events", "default")
         return  NextResponse.json({ message: "Event updated", event: updated }, { status: 200 });
     } catch (error) {
         if  (process.env.NODE_ENV === "development") console.error("Error updating event by slug: ", error);
@@ -193,7 +193,7 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams): Promis
         // Cascade delete bookings
         await Booking.deleteMany({ eventId: deleted._id });
 
-        revalidateTag("events", "minutes")
+        revalidateTag("events", "default")
         return NextResponse.json({ message: "Event deleted" }, { status: 200 });
     } catch (error) {
         if (process.env.NODE_ENV === "development") console.error("Error deleting event by slug: ", error);

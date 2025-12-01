@@ -37,7 +37,6 @@ const EventForm = ({
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        console.log(e.currentTarget)
 
         const tags = (tagsCsv || "")
             .split(",")
