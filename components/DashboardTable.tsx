@@ -7,8 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 
-const DashboardTable = ({ initialEvents, pageSize = 10, baseEditPath = "/dashboard/events"}: { initialEvents: AdminEventRow[]; pageSize?: number; baseEditPath?: string; }) => {
-    const [events, setEvents] = useState<AdminEventRow[]>(initialEvents ?? []);
+const DashboardTable = ({ initialEvents, pageSize = 10, baseEditPath = "/dashboard/events"}: { initialEvents: AdminEvent[]; pageSize?: number; baseEditPath?: string; }) => {
+    const [events, setEvents] = useState<AdminEvent[]>(initialEvents ?? []);
     const [page, setPage] = useState(1);
 
     const totalPages = Math.max(1, Math.ceil(events.length / pageSize));
@@ -72,7 +72,7 @@ const DashboardTable = ({ initialEvents, pageSize = 10, baseEditPath = "/dashboa
                                     <div className="flex justify-end gap-2">
                                         <Button variant="outline" size="icon" aria-label="Edit" title="Edit" className="cursor-pointer hover:bg-primary/40">
                                             <Link
-                                                href="/dashboard"
+                                                href={`${baseEditPath}/${event.slug}`}
                                             >
                                                 <Pencil className="h-4 w-4" />
                                             </Link>

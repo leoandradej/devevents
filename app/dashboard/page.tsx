@@ -9,7 +9,9 @@ const Dashboard = async () => {
     "use cache"
     cacheLife("minutes");
 
-    const res = await fetch(`${BASE_URL}/api/events/admin`, { next: { revalidate: 30 }});
+    const res = await fetch(`${BASE_URL}/api/events/admin`,
+        { next: { tags: ["events"], revalidate: 30 },
+        });
     const { events } = await res.json();
 
     return (
@@ -22,7 +24,7 @@ const Dashboard = async () => {
                     </Button>
                 </div>
 
-                <DashboardTable initialEvents={events as AdminEventRow[]} pageSize={10} />
+                <DashboardTable initialEvents={events as AdminEvent[]} pageSize={10} />
             </div>
         </section>
     )

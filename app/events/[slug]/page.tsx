@@ -1,19 +1,15 @@
 import EventDetails from "@/components/EventDetails";
 import { Suspense } from "react";
 
-const EventDetailsPage = async ({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) => {
-  const slug = params.then((p) => p.slug);
+const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> })=> {
+    const { slug } = await params;
 
-  return (
-    <main>
-      <Suspense fallback={<div>Loading...</div>}>
-        <EventDetails params={slug} />
-      </Suspense>
-    </main>
-  );
-};
+    return (
+        <main>
+            <Suspense fallback={<div className="p-6">Loading...</div>}>
+                <EventDetails slug={slug} />
+            </Suspense>
+        </main>
+    );
+}
 export default EventDetailsPage;

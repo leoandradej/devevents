@@ -44,10 +44,9 @@ const EventTags = ({ tags }: { tags: string[] }) => (
   </div>
 );
 
-const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) => {
+const EventDetails = async ({ slug }: { slug: string }) => {
   "use cache";
   cacheLife("hours");
-  const { slug } = await params;
 
   let event;
   try {
@@ -85,11 +84,11 @@ const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) =
     audience,
     tags,
     organizer,
-  } = event;
+  } = event as IEvent & { bookingsCount?: number; _id: string };
 
   if (!description) return notFound();
 
-  const bookings = 10;
+  const bookings = typeof event.bookingsCount === "number" ? event.bookingsCount : 0;
 
   const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
@@ -156,7 +155,7 @@ const EventDetails = async ({ params }: { params: Promise<{ slug: string }> }) =
               <p className="text-sm">Be the first to book your spot!</p>
             )}
 
-            <BookEvent eventId={event._id} slug={event.slug} />
+            <BookEvent eventId={String(event._id)} slug={event.slug} />
           </div>
         </aside>
       </div>
